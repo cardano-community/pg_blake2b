@@ -1,0 +1,4 @@
+comment = 'BLAKE2B'
+default_version = '1.0'
+module_pathname = '$libdir/blake2b'
+relocatable = true
