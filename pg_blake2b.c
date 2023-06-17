@@ -13,12 +13,20 @@ pg_blake2b(PG_FUNCTION_ARGS)
     
     bytea   *digest;
     bytea   *key = NULL;
-    bytea   *data = PG_GETARG_BYTEA_PP(0);
+    bytea   *data;
     
     size_t  keylen = 0;
-    size_t  datalen = VARSIZE(data) - VARHDRSZ;
+    size_t  datalen;
     
     int16   digest_size = BLAKE2B_OUTBYTES;
+    
+    if (PG_ARGISNULL(0))
+    {
+        PG_RETURN_NULL();
+    }
+    
+    data = PG_GETARG_BYTEA_PP(0);
+    datalen = VARSIZE(data) - VARHDRSZ;
     
     if (!PG_ARGISNULL(1))
     {
