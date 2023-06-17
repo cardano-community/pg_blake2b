@@ -30,7 +30,7 @@ make installcheck
 Enable extension:
 
 ```
-create extension blake2b;
+CREATE EXTENSION blake2b;
 ```
 
 ## Uninstall
@@ -38,7 +38,7 @@ create extension blake2b;
 Disable extension:
 
 ```
-drop extension blake2b;
+DROP EXTENSION blake2b;
 ```
 
 Uninstall pg_blake2b:
@@ -91,4 +91,16 @@ SELECT encode(blake2b('3333', 32, '\x0123456789'::bytea), 'hex');
 ------------------------------------------------------------------
  912bf54103cb9d1093c3e736514040fd6a7ea75d094c8ce843425a4791571b82
 (1 row)
+```
+
+Hash function speed:
+
+```
+EXPLAIN ANALYZE SELECT i, blake2b(i::text) FROM generate_series(1, 1000000) i;
+                                                             QUERY PLAN
+------------------------------------------------------------------------------------------------------------------------------------
+ Function Scan on generate_series i  (cost=0.00..17500.00 rows=1000000 width=36) (actual time=70.494..466.290 rows=1000000 loops=1)
+ Planning Time: 0.036 ms
+ Execution Time: 494.046 ms
+(3 rows)
 ```
