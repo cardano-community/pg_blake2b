@@ -1,0 +1,9 @@
+# Compiled files
+*.o
+*.bc
+*.so
+
+# Tests
+results
+regression.diffs
+regression.out
