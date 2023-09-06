@@ -10,24 +10,24 @@ Datum
 pg_blake2b(PG_FUNCTION_ARGS)
 {
     uint8_t *hash;
-    
-    bytea   *digest;
-    bytea   *key = NULL;
+
     bytea   *data;
-    
-    size_t  keylen = 0;
+    bytea   *digest;
+    bytea   *key = palloc(VARHDRSZ);
+
     size_t  datalen;
-    
+    size_t  keylen = 0;
+
     int16   digest_size = BLAKE2B_OUTBYTES;
-    
+
     if (PG_ARGISNULL(0))
     {
         PG_RETURN_NULL();
     }
-    
+
     data = PG_GETARG_BYTEA_PP(0);
-    datalen = VARSIZE(data) - VARHDRSZ;
-    
+    datalen = VARSIZE_ANY_EXHDR(data);
+
     if (!PG_ARGISNULL(1))
     {
         digest_size = PG_GETARG_INT16(1);
@@ -43,11 +43,11 @@ pg_blake2b(PG_FUNCTION_ARGS)
             );
         }
     }
-    
+
     if (!PG_ARGISNULL(2))
     {
         key = PG_GETARG_BYTEA_PP(2);
-        keylen = VARSIZE(key) - VARHDRSZ;
+        keylen = VARSIZE_ANY_EXHDR(key);
         if (keylen > BLAKE2B_KEYBYTES)
         {
             ereport(ERROR,
@@ -61,16 +61,16 @@ pg_blake2b(PG_FUNCTION_ARGS)
         }
     }
 
-    hash = alloca(digest_size);
+    hash = palloc(digest_size);
     
-    blake2b(hash, digest_size, (uint8 *) VARDATA(data), datalen, (uint8 *) VARDATA(key), keylen);
+    blake2b(hash, digest_size, (uint8_t *) VARDATA_ANY(data), datalen, (uint8_t *) VARDATA_ANY(key), keylen);
 
     digest = palloc(VARHDRSZ + digest_size);
     SET_VARSIZE(digest, VARHDRSZ + digest_size);
     memcpy(VARDATA(digest), hash, digest_size);
 
-	PG_FREE_IF_COPY(data, 0);
-	PG_FREE_IF_COPY(key, 2);
+    PG_FREE_IF_COPY(data, 0);
+    PG_FREE_IF_COPY(key, 2);
     
     PG_RETURN_BYTEA_P(digest);
 }

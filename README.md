@@ -54,13 +54,13 @@ Extension method is defined as function with 3 parameters. The first parameter s
 ```
 blake2b(
     data bytea,
-    digest_size integer DEFAULT NULL,
+    digest_size integer DEFAULT 64,
     key bytea DEFAULT NULL
 )
 
 blake2b(
     data text,
-    digest_size integer DEFAULT NULL,
+    digest_size integer DEFAULT 64,
     key bytea DEFAULT NULL
 )
 ```
@@ -89,7 +89,7 @@ SELECT encode(blake2b('3333', 32), 'hex');
 SELECT encode(blake2b('3333', 32, '\x0123456789'::bytea), 'hex');
                               encode                              
 ------------------------------------------------------------------
- 912bf54103cb9d1093c3e736514040fd6a7ea75d094c8ce843425a4791571b82
+ d9d377016aaf8bc991de49c211ca80b90d96f5dbc962e19b032e2922f1bab50e
 (1 row)
 ```
 
