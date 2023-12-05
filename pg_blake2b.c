@@ -1,5 +1,6 @@
 #include "postgres.h"
 #include "fmgr.h"
+#include "funcapi.h"
 #include "blake2b.c"
 
 PG_MODULE_MAGIC;
